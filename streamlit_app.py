@@ -30,29 +30,16 @@ def embed(text):
     return model.encode([text])[0]
 
 def semantic_search(query, top_k=8):
-    query_vec = embed(query).tolist()  # Convert NumPy array to list
+    query_vec = embed(query).tolist()
 
-    url = f"{ASTRA_DB_API_ENDPOINT}/collections/news_headlines/search"
+    results = collection.find(
+        {},  # Optional filters can go here
+        sort={"$vector": query_vec}  # vector search via sort clause
+    )
 
-    headers = {
-        "Content-Type": "application/json",
-        "X-Cassandra-Token": ASTRA_DB_APPLICATION_TOKEN
-    }
+    # Optionally, limit results manually
+    return list(results)[:top_k]
 
-    payload = {
-        "vector": {
-            "embedding": query_vec,
-            "top_k": top_k
-        },
-        "fields": ["Headline", "URL", "Published on", "Source"]
-    }
-
-    response = requests.post(url, headers=headers, json=payload)
-
-    if response.status_code != 200:
-        raise Exception(f"Vector search failed: {response.text}")
-
-    return response.json()["data"]["documents"]
 
 
 
