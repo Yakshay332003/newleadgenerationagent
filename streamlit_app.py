@@ -98,7 +98,7 @@ if user_input := st.chat_input("Ask a question about pharma, biotech, CDMO news.
         st.markdown(user_input)
 
 
-    context = semantic_search(user_input, top_k=8)
+    context = semantic_search(user_input, top_k=30)
 
 
     answer = llm_agent(st.session_state.messages, context)
