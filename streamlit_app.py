@@ -27,16 +27,16 @@ model = SentenceTransformer(
 def embed(text: str):
     vector = model.encode(text)
     return vector.tolist() 
-def semantic_search(query, top_k=15):
-    query_vector = embed(query)  
-    
-  
-    results_cursor = collection.find(
-        sort={"$vector": query_vector},   # ✅ use $vector, not $vectorize
-        limit=top_k,
-        projection={"Headline": True, "URL": True, "Published on": True, "Source": True}
+def semantic_search(query, top_k=8):
+    query_vec = embed(query).tolist()
+    results = collection.find(
+        sort={"$vector": query_vec},  # vector similarity search
+        limit=top_k
     )
-    return list(results_cursor)
+    return [
+        {"Headline": r["Headline"], "URL": r["URL"], "Published on": r["Published on"], "Source": r["Source"]}
+        for r in results
+    ]
 
 
 
