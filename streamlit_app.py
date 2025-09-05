@@ -30,12 +30,13 @@ def embed(text):
     return model.encode([text])[0]
 def semantic_search(query, top_k=8):
     query_embedding = embed(query)
-    results = collection.find(
-        vector=query_embedding,     # 🔹 Pass embedding here
-        limit=top_k,                # 🔹 top_k is now "limit"
-        projection=["Headline", "URL", "Published on", "Source"]  # 🔹 instead of "fields"
+    results = collection.vector_find(
+        query_embedding, 
+        limit=top_k,
+        fields=["Headline", "URL", "Published on", "Source"]  # optional
     )
     return results
+
 
 
 
