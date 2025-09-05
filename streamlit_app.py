@@ -20,10 +20,9 @@ collection = db.get_collection("news_headlines")
 genai.configure(api_key=gemini_api_key)
 
 model = SentenceTransformer(
-    "Alibaba-NLP/gte-base-en-v1.5",
-    trust_remote_code=True   # ✅ allow loading custom code
+    "intfloat/multilingual-e5-large",
+    trust_remote_code=True
 )
-
 
 def embed(text: str):
     vector = model.encode(text)
@@ -31,10 +30,7 @@ def embed(text: str):
 def semantic_search(query, top_k=15):
     query_vector = embed(query)  
     
-    # ✅ Convert NumPy array to list if needed
-    if hasattr(query_vector, "tolist"):
-        query_vector = query_vector.tolist()
-
+  
     results_cursor = collection.find(
         sort={"$vector": query_vector},   # ✅ use $vector, not $vectorize
         limit=top_k,
