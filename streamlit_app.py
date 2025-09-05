@@ -53,19 +53,6 @@ def semantic_search(query, top_k=8):
         raise Exception(f"Vector search failed: {response.text}")
 
     return response.json()["data"]["documents"]
-🔍 Summary of Changes
-✅ embed(query).tolist() — ensures the vector is JSON serializable.
-
-✅ Uses requests.post() to call Astra DB's vector search API.
-
-✅ Extracts only the fields you care about.
-
-Let me know if you'd like help mocking this for local testing (e.g., without Astra), or if you want to use an alternative like LangChain or Qdrant.
-
-
-
-
-Ask ChatGPT
 
 
 
