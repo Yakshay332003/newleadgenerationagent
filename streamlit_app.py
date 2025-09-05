@@ -18,7 +18,12 @@ collection = db.get_collection("news_headlines")
 
 
 genai.configure(api_key=gemini_api_key)
-model = SentenceTransformer("Alibaba-NLP/gte-base-en-v1.5")  # 1024 dims
+
+model = SentenceTransformer(
+    "Alibaba-NLP/gte-base-en-v1.5",
+    trust_remote_code=True   # ✅ allow loading custom code
+)
+
 
 def embed(text: str):
     vector = model.encode(text)
