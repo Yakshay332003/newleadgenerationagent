@@ -1,0 +1,6 @@
+streamlit
+astrapy
+pandas
+sentence-transformers
+scikit-learn
+google-generativeai
