@@ -21,13 +21,11 @@ genai.configure(api_key=gemini_api_key)
 
 
 @st.cache_resource
-def load_model():
-    return SentenceTransformer("all-MiniLM-L6-v2", use_auth_token=hf_token)
+model = SentenceTransformer("Alibaba-NLP/gte-base-en-v1.5")  # 1024 dims
 
-model = load_model()
-
-def embed(text):
-    return model.encode([text])[0]
+def embed(text: str):
+    vector = model.encode(text)
+    return vector.tolist() 
 def semantic_search(query, top_k=15):
     query_vector = embed(query)  
     
