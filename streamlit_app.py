@@ -28,20 +28,19 @@ model = load_model()
 def embed(text):
     return model.encode([text])[0]
 
-
 def semantic_search(query, top_k=8):
-    query_vec = embed(query).tolist()
-    docs = list(collection.find({}))
-    if not docs:
-        return []
+    query_vec = embed(query)  # Your query embedding
 
-    df = pd.DataFrame(docs)
-    df["embeddings"] = df["Headline"].apply(lambda x: embed(x))
-    sims = cosine_similarity([query_vec], list(df["embeddings"].values))[0]
-    df["similarity"] = sims
-    df = df.sort_values("similarity", ascending=False).head(top_k)
+    # Native vector search from Astra DB
+    results = collection.vector_find(
+        field="embedding",         # Field where vectors are stored
+        vector=query_vec,          # The query vector
+        top_k=top_k,               # Number of similar items
+        fields=["Headline", "URL", "Published on", "Source"]  # Fields to return
+    )
 
-    return df[["Headline", "URL", "Published on", "Source"]].to_dict(orient="records")
+    return results
+
 
 def llm_agent(messages, context):
     context_text = "\n".join(
