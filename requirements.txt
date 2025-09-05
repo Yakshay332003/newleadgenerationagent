@@ -1,5 +1,6 @@
 streamlit
-astrapy
+astrapy==2.0.1
+
 pandas
 sentence-transformers
 scikit-learn
