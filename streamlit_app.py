@@ -30,15 +30,16 @@ def embed(text):
     return model.encode([text])[0]
 
 def semantic_search(query, top_k=8):
-    query_vec = embed(query).tolist()
-
     results = collection.find(
-        {},  # Optional filters can go here
-        sort={"$vector": query_vec}  # vector search via sort clause
+        {},
+        sort={"$vectorize": query}
     )
+    
+    return [
+        {k: doc.get(k) for k in ["Headline", "URL", "Published on", "Source"]}
+        for doc in results
+    ][:top_k]
 
-    # Optionally, limit results manually
-    return list(results)[:top_k]
 
 
 
