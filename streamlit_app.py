@@ -28,13 +28,14 @@ model = load_model()
 
 def embed(text):
     return model.encode([text])[0]
-
 def semantic_search(query, top_k=8):
-    results = collection.find({}, sort={"$vectorize": query})
-    return [
-        {k: doc.get(k) for k in ["Headline", "URL", "Published on", "Source"]}
-        for doc in results
-    ][:top_k]
+    query_embedding = embed(query)
+    results = collection.find_vector(
+        vector=query_embedding,
+        top_k=top_k,
+        fields=["Headline", "URL", "Published on", "Source"]  # Optional: reduce payload
+    )
+    return results
 
 
 
