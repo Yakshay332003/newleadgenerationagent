@@ -28,33 +28,14 @@ model = load_model()
 
 def embed(text):
     return model.encode([text])[0]
-def load_news_with_embeddings():
-    docs = list(collection.find({}))  # Get all docs
-    df = pd.DataFrame(docs)
 
-    # Check if embeddings are stored; if not, generate and save
-    if "embedding" not in df.columns or df["embedding"].isnull().any():
-        df["embedding"] = df["Headline"].apply(lambda text: embed(text).tolist())
-        # Save embeddings back to DB here if you want
-
-    # Convert embeddings back to numpy arrays for similarity calculation
-    df["embedding"] = df["embedding"].apply(np.array)
-    return df
-
-df_news = load_news_with_embeddings()
 def semantic_search(query, top_k=8):
-    query_emb = embed(query).reshape(1, -1)  # embed query, shape (1, dim)
-    embeddings = np.vstack(df_news["embedding"].values)  # (N, dim)
-    
-    # Compute cosine similarity
-    similarities = cosine_similarity(query_emb, embeddings)[0]
-    
-    # Get indices of top_k highest similarities
-    top_indices = similarities.argsort()[-top_k:][::-1]
-    
-    # Retrieve matching documents
-    results = df_news.iloc[top_indices]
-    return results.to_dict(orient="records")
+    results = collection.find({}, sort={"$vectorize": query})
+    return [
+        {k: doc.get(k) for k in ["Headline", "URL", "Published on", "Source"]}
+        for doc in results
+    ][:top_k]
+
 
 
 
