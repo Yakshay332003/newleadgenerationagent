@@ -29,10 +29,14 @@ model = load_model()
 def embed(text):
     return model.encode([text])[0]
 def semantic_search(query, top_k=15):
-    query=embed(query)
+    query_vector = embed(query)  
+    
+    # ✅ Convert NumPy array to list if needed
+    if hasattr(query_vector, "tolist"):
+        query_vector = query_vector.tolist()
+
     results_cursor = collection.find(
-        {},  # or apply filters here if needed
-        sort={"$vectorize": query},   # run vector search on query
+        sort={"$vector": query_vector},   # ✅ use $vector, not $vectorize
         limit=top_k,
         projection={"Headline": True, "URL": True, "Published on": True, "Source": True}
     )
