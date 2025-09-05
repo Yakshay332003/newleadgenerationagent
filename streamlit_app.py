@@ -28,7 +28,7 @@ def embed(text: str):
     vector = model.encode(text)
     return vector.tolist() 
 def semantic_search(query, top_k=8):
-    query_vec = embed(query).tolist()
+    query_vec = embed(query)
     results = collection.find(
         sort={"$vector": query_vec},  # vector similarity search
         limit=top_k
