@@ -29,6 +29,7 @@ model = load_model()
 def embed(text):
     return model.encode([text])[0]
 def semantic_search(query, top_k=15):
+    query=embed(query)
     results_cursor = collection.find(
         {},  # or apply filters here if needed
         sort={"$vectorize": query},   # run vector search on query
