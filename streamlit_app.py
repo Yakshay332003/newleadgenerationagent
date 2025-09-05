@@ -18,9 +18,6 @@ collection = db.get_collection("news_headlines")
 
 
 genai.configure(api_key=gemini_api_key)
-
-
-@st.cache_resource
 model = SentenceTransformer("Alibaba-NLP/gte-base-en-v1.5")  # 1024 dims
 
 def embed(text: str):
